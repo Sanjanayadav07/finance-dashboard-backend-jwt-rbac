@@ -23,6 +23,7 @@ Content-Type: application/json
 {
   "name": "New User",
   "email": "new@test.com",
+"password" : ,
   "role": "analyst"
 }
 
