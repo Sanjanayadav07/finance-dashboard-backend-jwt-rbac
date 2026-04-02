@@ -22,7 +22,7 @@ app.use(express.json());
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/records', recordRoutes);
-app.use('/api/dashboard', dashboardRoutes);
+app.use('/dashboard', dashboardRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {

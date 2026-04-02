@@ -53,6 +53,9 @@ class UserService {
   getUserById(userId) {
     return db.users.find(u => u.id === userId);
   }
+   getUserByEmail(email) {
+    return db.users.find(u => u.email === email);
+  }
 }
 
 module.exports = new UserService();

@@ -1,5 +1,5 @@
 const recordService = require('../services/recordService');
-
+const db = require('../store/db');
 class RecordController {
   createRecord(req, res, next) {
     try {
@@ -24,15 +24,59 @@ class RecordController {
       next(error);
     }
   }
-
-  getRecords(req, res, next) {
-    try {
-      const { type, category, date, search, page, limit } = req.query;
-      const result = recordService.getRecords({ type, category, date, search, page, limit });
-      res.json(result);
-    } catch (error) {
-      next(error);
+  /*
+    getRecords(req, res, next) {
+      try {
+        const { type, category, date, search, page, limit } = req.query;
+        const result = recordService.getRecords({ type, category, date, search, page, limit });
+        res.json(result);
+      } catch (error) {
+        next(error);
+      }
     }
+      */
+  getRecords({ type, category, date, search, page = 1, limit = 5 }) {
+    let records = db.records.filter(r => !r.isDeleted);
+
+    // Filter by type
+    if (type) {
+      records = records.filter(r => r.type === type);
+    }
+
+    // Filter by category
+    if (category) {
+      records = records.filter(r => r.category === category);
+    }
+
+    // Filter by exact date
+    if (date) {
+      records = records.filter(r => {
+        return new Date(r.date).toISOString().split('T')[0] === date;
+      });
+    }
+
+    // 🔍 Search (category + note)
+    if (search) {
+      const searchLower = search.toLowerCase();
+      records = records.filter(r =>
+        r.category.toLowerCase().includes(searchLower) ||
+        (r.note && r.note.toLowerCase().includes(searchLower))
+      );
+    }
+
+    // 📄 Pagination
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const start = (pageNum - 1) * limitNum;
+
+    const paginatedData = records.slice(start, start + limitNum);
+
+    return {
+      page: pageNum,
+      limit: limitNum,
+      total: records.length,
+      data: paginatedData
+    };
   }
 
   updateRecord(req, res, next) {

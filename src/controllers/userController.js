@@ -1,8 +1,9 @@
 const jwt = require('jsonwebtoken');
 const userService = require('../services/userService');
 
-const JWT_SECRET = 'your_super_secret_key'; 
+const JWT_SECRET = 'your_super_secret_key';
 class UserController {
+  /*
   login(req, res, next) {
     try {
       const { email, id } = req.body; 
@@ -30,6 +31,54 @@ class UserController {
         token,
         user: { id: user.id, name: user.name, role: user.role }
       });
+    } catch (error) {
+      next(error);
+    }
+  }*/
+
+  login(req, res, next) {
+    try {
+      const { email, password } = req.body;
+
+      // Validation
+      if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password are required' });
+      }
+
+      // Get user by email
+      const user = userService.getUserByEmail(email);
+
+      if (!user) {
+        return res.status(401).json({ error: 'User not found' });
+      }
+
+      // Password check
+      if (user.password !== password) {
+        return res.status(401).json({ error: 'Invalid credentials' });
+      }
+
+      // Active check
+      if (!user.isActive) {
+        return res.status(403).json({ error: 'Account is inactive' });
+      }
+
+      // Generate token
+      const token = jwt.sign(
+        { id: user.id, email: user.email, role: user.role },
+        JWT_SECRET,
+        { expiresIn: '1h' }
+      );
+
+      res.json({
+        message: 'Login successful',
+        token,
+        user: {
+          id: user.id,
+          name: user.name,
+          role: user.role
+        }
+      });
+
     } catch (error) {
       next(error);
     }
