@@ -1,40 +1,156 @@
-# Finance Dashboard API Documentation
+#  Finance Dashboard API Documentation
 
-This API provides backend support for a finance dashboard with User & Role Management, Financial Records Management, and Dashboard Insights.
+This API provides backend support for a finance dashboard system with **User Management**, **Financial Records**, and **Analytics Dashboard** using **JWT Authentication** and **Role-Based Access Control (RBAC)**.
 
-## Authentication
-The API uses JWT-based authentication.
-1. **Login**: `POST /api/users/login` with `email` and `id` (acting as a password in this mock).
-2. **Authorize**: Include the returned token in the `Authorization` header as `Bearer <token>`.
+---
 
-## Endpoints
+## 🔐 Authentication
 
-### 1. User Management (Admin only)
-- `POST /api/users`: Create a new user.
-- `GET /api/users`: List all users.
-- `PATCH /api/users/:id/status`: Update user active/inactive status.
+The API uses **JWT-based authentication**.
 
-### 2. Financial Records
-- `GET /api/records`: List records with support for:
-    - **Pagination**: `?page=1&limit=10`
-    - **Filtering**: `?type=income&category=Salary&date=2026-03`
-    - **Search**: `?search=grocery` (searches in `note` and `category`)
-- `POST /api/records`: Create a record (Analyst/Admin).
-- `PUT /api/records/:id`: Update a record (Admin).
-- `DELETE /api/records/:id`: Soft delete a record (Admin).
+### 1. Login
 
-### 3. Dashboard Summary (Analyst/Admin)
-- `GET /api/dashboard/summary`: Get aggregated financial data including:
-    - Total income/expense
-    - Net balance
-    - Category-wise totals
-    - Recent transactions
-    - **Monthly Trends**
+```
+POST /api/users/login
+```
 
-## Features
-- **Rate Limiting**: 100 requests per 15 minutes per IP.
-- **Soft Delete**: Records are marked as `isDeleted: true` and excluded from results.
-- **Global Error Handling**: Standardized JSON error responses.
+**Request Body:**
 
-## Testing
-Run `npm test` to execute the Jest test suite.
+```json
+{
+  "email": "admin@example.com",
+  "id": "admin-123"
+}
+```
+
+**Response:**
+
+```json
+{
+  "token": "your_jwt_token"
+}
+```
+
+---
+
+### 2. Authorization
+
+Include the token in headers:
+
+```
+Authorization: Bearer <token>
+```
+
+---
+
+## 📌 API Endpoints
+
+---
+
+### 👤 1. User Management (Admin Only)
+
+| Method | Endpoint              | Description              |
+| ------ | --------------------- | ------------------------ |
+| POST   | /api/users            | Create a new user        |
+| GET    | /api/users            | Get all users            |
+| PATCH  | /api/users/:id/status | Activate/Deactivate user |
+
+---
+
+### 💰 2. Financial Records
+
+#### 🔹 Get Records
+
+```
+GET /api/records
+```
+
+**Supports:**
+
+* Pagination → `?page=1&limit=10`
+* Filtering → `?type=income&category=Salary&date=2026-03`
+* Search → `?search=grocery`
+
+---
+
+#### 🔹 Create Record (Analyst/Admin)
+
+```
+POST /api/records
+```
+
+---
+
+#### 🔹 Update Record (Admin)
+
+```
+PUT /api/records/:id
+```
+
+---
+
+#### 🔹 Delete Record (Soft Delete - Admin)
+
+```
+DELETE /api/records/:id
+```
+
+---
+
+### 📊 3. Dashboard Summary (Analyst/Admin)
+
+```
+GET /api/dashboard/summary
+```
+
+**Returns:**
+
+* Total Income
+* Total Expense
+* Net Balance
+* Category-wise totals
+* Recent Transactions
+* Monthly Trends
+
+---
+
+## ✨ Key Features
+
+* 🔐 JWT Authentication
+* 🛡️ Role-Based Access Control (RBAC)
+* ⚡ Rate Limiting (100 requests / 15 minutes)
+* 🧹 Soft Delete Support
+* 🔎 Search, Filtering & Pagination
+* 📊 Dashboard Analytics
+* ⚠️ Centralized Error Handling
+
+---
+
+## 🧪 Testing
+
+Run automated tests:
+
+```
+npm test
+```
+
+---
+
+## ⚠️ Notes
+
+* Uses **in-memory storage** (data resets on restart)
+* Authentication is simplified (mock-based)
+* Designed for backend architecture demonstration
+
+---
+
+## 🏁 Conclusion
+
+This API demonstrates:
+
+* Clean backend architecture
+* Secure authentication & authorization
+* Scalable service-based design
+* Real-world financial data processing
+
+---
